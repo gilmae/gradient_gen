@@ -11,6 +11,8 @@ import (
   "math/rand"
   "time"
   "sort"
+  "encoding/hex"
+  "encoding/json"
 )
 
 func main() {
@@ -53,7 +55,13 @@ func main() {
     }
   }
 
-  file, err := os.Create(os.Args[1])
+  var filename string = "test.jpg"
+
+  if (len(os.Args) > 1) {
+    filename = os.Args[1]
+  }
+
+  file, err := os.Create(filename)
   if err != nil {
     fmt.Println(err)
   }
@@ -66,9 +74,17 @@ func main() {
     fmt.Println(err)
   }
 
+  var gradient  [][]string
 
-  fmt.Println(xSequence)
-  fmt.Println(redpoints)
-  fmt.Println(greenpoints)
-  fmt.Println(bluepoints)
-}
+  gradient = make([][]string, points)
+
+  for i,_ := range gradient {
+    var hexRGB = hex.EncodeToString([]byte {uint8(redpoints[i]), uint8(greenpoints[i],), uint8(bluepoints[i])})
+    gradient[i] = []string {fmt.Sprintf("%.6f", xSequence[i]), hexRGB}
+  }
+
+  j, err := json.Marshal(gradient)
+  var jsonString = string(j[:])
+
+  fmt.Println(jsonString)
+  }
